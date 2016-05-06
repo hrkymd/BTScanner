@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -85,6 +86,23 @@ public class MainActivity extends AppCompatActivity {
         assert devListView != null;
         devListView.setAdapter(devListAdapter);
 
+
+        devListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+                BluetoothDevice device = devList.get(pos);
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(device.getName())
+                        .setMessage(device.getAddress())
+                        .setPositiveButton("OK", null)
+                        .show();
+
+            }
+        });
+
+
+
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter == null) {
             Toast.makeText(this, R.string.toast_bt_is_not_available, Toast.LENGTH_SHORT).show();
@@ -99,8 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onReceive: " + action);
                 switch (intent.getAction()) {
                 case BluetoothDevice.ACTION_FOUND:
-                    BluetoothDevice device =
-                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     devListAdapter.add(device);
                     devListAdapter.notifyDataSetChanged();
                     devListView.smoothScrollToPosition(devListAdapter.getCount());
